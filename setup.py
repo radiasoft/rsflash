@@ -12,7 +12,12 @@ pksetup.setup(
     author_email='pip@radiasoft.net',
     description='Tools for performing and analyzing FLASH simulations of capillary discharge plasmas',
     install_requires=[
+        'h5py',
+        'matplotlib',
+        'numpy',
         'pykern',
+        'scipy',
+        'yt',
     ],
     license='http://www.apache.org/licenses/LICENSE-2.0.html',
     url='https://github.com/radiasoft/rsflash',
