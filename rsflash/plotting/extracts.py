@@ -9,7 +9,7 @@ import yt
 import numpy as np
 from itertools import groupby #used for interpolation
 
-def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=2000, coordinates=[(0,0,0),(0,0,0)],cubic=False):
+def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=2000, coordinates=[(0,0,0),(0,0,0)], xyz=False, cubic=False):
     '''
     Leverage extract_line on multiple files to grab from multiple times
 
@@ -42,6 +42,13 @@ def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=200
           even if interpolate=True
      coordinates: [(x1,y1,z1),(x2,y2,z2)] ( Default is [(0,0,0),(0,0,0)] )
           Sample along an arbitrary line for a lineout from sets of coorinates 1 to 2
+    xyz: bool (Default[False])
+          Return the sampled points in the flash space as ordered lists of
+          coordinates. This changes the nature of the output.
+          Be careful with outputs if mixing this with interpolation.
+    cubic: bool (Deafult[False])
+         Use Scipy UnivariateSpline routine to further smooth the plot output
+         over 500 interpolated points. 
 
 
     '''
@@ -54,14 +61,27 @@ def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=200
 
         ds = yt.load(file)
         time = ds.parameters['time']
-
-        xvals, yvals = extract_line(ds, field, axis, Nmax, interp=interpolate, interpolate_max=interpolate_max, coordinates=coordinates,cubic=cubic)
-
-        xlineouts.append(xvals)
-        ylineouts.append(yvals)
-        times.append(time)
-
-    return xlineouts, ylineouts, times
+        
+        if xyz:
+            xc, yc, zc, linex, liney = extract_line(ds, field, axis, Nmax, interp=interpolate, interpolate_max=interpolate_max, coordinates=coordinates, xyz=xyz, cubic=cubic)
+            
+            xcvals.append(xc)
+            ycvals.append(yc)
+            zcvals.append(zc)
+            linexvals.append(linex)
+            lineyvals.append(liney)
+            times.append(time)
+            
+            return xcvals, ycvals, zcvals, linexvals, lineyvals, times
+            
+        else:
+            xvals, yvals = extract_line(ds, field, axis, Nmax, interp=interpolate, interpolate_max=interpolate_max, coordinates=coordinates, xyz=xyz, cubic=cubic)
+            
+            xlineouts.append(xvals)
+            ylineouts.append(yvals)
+            times.append(time)
+            
+            return xlineouts, ylineouts, times
 
 def interpolate_lineout(xarr,yarr,**kwargs):
     '''
