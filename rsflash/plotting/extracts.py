@@ -57,6 +57,10 @@ def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=200
     xlineouts = []
     ylineouts = []
 
+    xcvals = []
+    ycvals = []
+    zcvals = []
+
     for file in files:
 
         ds = yt.load(file)
