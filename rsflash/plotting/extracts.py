@@ -76,16 +76,16 @@ def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=200
             ylineouts.append(liney)
             times.append(time)
             
-            return xcvals, ycvals, zcvals, xlineouts, ylineouts, times
-            
         else:
             xvals, yvals = extract_line(ds, field, axis, Nmax, interp=interpolate, interpolate_max=interpolate_max, coordinates=coordinates, xyz=xyz, cubic=cubic)
             
             xlineouts.append(xvals)
             ylineouts.append(yvals)
             times.append(time)
-            
-            return xlineouts, ylineouts, times
+    if xyz:        
+        return xcvals, ycvals, zcvals, xlineouts, ylineouts, times
+    else:
+        return xlineouts, ylineouts, times
 
 def interpolate_lineout(xarr,yarr,**kwargs):
     '''
