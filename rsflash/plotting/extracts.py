@@ -249,11 +249,12 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
 
     if data_set.geometry == "cylindrical":
         #The limits for a cylindrical simulation, based on the file
-        xmin = 0.0; xmax = data_set.domain_width[0] + xmin # the max range of r
-        zmin = data_set.index.grid_left_edge[0][1];        # the min value of z
-        zmax = data_set.domain_width[1] + zmin             # the max value of z
-
-        #Check if the arbitrarily defined plot exceeds these limits
+        xmin = 0.0; xmax = data_set.domain_width[0].d + xmin # the max range of r
+        zmin = data_set.index.grid_left_edge[0][1].d;        # the min value of z
+        zmax = data_set.domain_width[1].d + zmin             # the max value of z
+        
+        
+        #Check if an arbitrarily defined plot exceeds simulation limits
         if coords1 != coords2:
             xmin_arb = coords1[0]; xmax_arb = coords2[0]
             ymin_arb = coords1[1]; ymax_arb = coords2[1]
@@ -268,17 +269,18 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
                     print("Plot axis out of bounds")
                     return
 
-
         if str(data_set.dimensionality) == '3':
             print("Warning: All extracted lines at theta = pi")
 
         if axis.lower() == 'r':
+            print("Sampling along r")
             x_coords = [xmin + (0.5 + j) * (xmax - xmin) / Nmax for j in range(Nmax)]
             y_coords = [0.5 * (zmin + zmax) for j in range(Nmax)]
             z_coords = [np.pi for j in range(Nmax)]
             xarr = np.array(x_coords)
 
         elif axis.lower() == 'z':
+            print("Sampling along z")
             x_coords = [xmin + (0.5) * (xmax - xmin) for j in range(Nmax)]
             y_coords = [zmin + (0.5 + j) * (zmax - zmin) / Nmax for j in range(Nmax)]
             z_coords = [np.pi for j in range(Nmax)]
@@ -295,9 +297,9 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
 
     if data_set.geometry == "cartesian":
         #The limits for a cartesian simulation
-        xmin = data_set.index.grid_left_edge[0][0]; xmax = data_set.domain_width[0] + xmin
-        ymin = data_set.index.grid_left_edge[0][1]; ymax = data_set.domain_width[1] + ymin
-        zmin = data_set.index.grid_left_edge[0][2]; zmax = data_set.domain_width[2] + zmin
+        xmin = data_set.index.grid_left_edge[0][0].d; xmax = data_set.domain_width[0].d + xmin
+        ymin = data_set.index.grid_left_edge[0][1].d; ymax = data_set.domain_width[1].d + ymin
+        zmin = data_set.index.grid_left_edge[0][2].d; zmax = data_set.domain_width[2].d + zmin
 
         #Check if the arbitrarily defined plot exceeds these limits
         # BTW it's not really 'xmin' or 'xmax', more like x1 and x2
