@@ -62,7 +62,7 @@ def get_lineouts(files, field, axis, Nmax, interpolate=True, interpolate_max=200
     zcvals = []
 
     for file in files:
-
+        print('Extracting {} for file {}'.format(field,file))
         ds = yt.load(file)
         time = ds.parameters['time']
         
@@ -179,7 +179,7 @@ def interpolate_lineout(xarr,yarr,**kwargs):
 
     return new_xvals,new_yvals
 
-def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
+def extract_line(data_set, field_name, axis, Nmax, interp=True, inc=1e-12, **kwargs):
     """
     Sample points along an arbitrary 1-d line in a FLASH dataset using yt
 
@@ -197,8 +197,11 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
 
 
     Options: Keyword Arguments
-     interpo: bool (Default[True])
+     interp: bool (Default[True])
           If the user wants a smooth rather than staircased plot
+     inc: int (Default[1e-12])
+          Increment used to modify x/y/z sampling in case of a YT evaluation error
+          at the requested datapoint
      step_threshold: float (Default[1e-6])
           The maximum fractional difference between two
           step values below, which we assume the differences are
@@ -350,10 +353,19 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
 
 
     #Sample from the dataset
+    inc = 1e-12 #increment for resampling mesh
+
+    #Sample from the dataset
     for j in range(Nmax):
         #convert kelvin to eV and drop units
         DataPoint = data_set.point([x_coords[j],y_coords[j],z_coords[j]])
-        yarr[j] = DataPoint['flash', field_name].in_cgs().d[0]
+
+        try:
+            yarr[j] = DataPoint['flash', field_name].in_cgs().d[0]
+        except IndexError:
+            #add an increment to the sampling location
+            DataPoint = data_set.point([x_coords[j]+inc,y_coords[j]+inc,z_coords[j]+inc])
+            yarr[j] = DataPoint['flash', field_name].in_cgs().d[0]     
 
     #Fix 'staircasing' by connecting dots between the
     # central values of each step.  This necessarily breaks the
@@ -361,7 +373,9 @@ def extract_line(data_set, field_name, axis, Nmax, interp=True, **kwargs):
     # stored above, since we're determining values along a new
     # line r' with variable spacing.
     if interp:
+        #print("before_interp: {}".fomrat(yarr))
         new_xvals, new_yvals = interpolate_lineout(xarr,yarr,**kwargs)
+        #print("after_interp: {}".fomrat(new_yvals))
 
         if kwargs.pop("xyz",False):
             return np.asarray(x_coords), np.asarray(y_coords), np.asarray(z_coords), np.asarray(new_xvals), np.asarray(new_yvals)
