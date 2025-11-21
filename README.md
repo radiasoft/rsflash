@@ -2,12 +2,12 @@
 
 Tools for performing and analyzing FLASH simulations of capillary discharge plasmas
 
-Learn more at https://github.com/radiasoft/rsflash.
+Learn more at https://git.radiasoft.org/rsflash.
 
-Documentation: http://rsflash.readthedocs.org/en/latest/
+Documentation: https://rsflash.readthedocs.io
 
 #### License
 
-License: http://www.apache.org/licenses/LICENSE-2.0.html
+License: https://www.apache.org/licenses/LICENSE-2.0.html
 
-Copyright (c) 2021 RadiaSoft LLC.  All Rights Reserved.
+Copyright (c) 2025 RadiaSoft LLC.  All Rights Reserved.
