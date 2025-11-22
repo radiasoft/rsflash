@@ -3,6 +3,10 @@ Welcome to rsflash
 
 Tools for performing and analyzing FLASH simulations of capillary discharge plasmas
 
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+
 .. toctree::
    :maxdepth: 2
 
